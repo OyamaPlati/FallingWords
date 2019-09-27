@@ -13,41 +13,39 @@ public class WordPanel extends JPanel implements Runnable {
 	private WordRecord[] words;
 	private int noWords;
 	private int maxY;
+	
    private Thread animator;
    
-	@Override
 	public void paintComponent(Graphics g) {
-       int width = getWidth();
-       int height = getHeight();
-       //System.out.println("Width: " + width + " Height: " + height);
-       g.clearRect(0,0,width,height);
-       g.setColor(Color.red);
-       g.fillRect(0,maxY-10,width,height);
-   
-       g.setColor(Color.black);
-       g.setFont(new Font("Helvetica", Font.PLAIN, 26));
-       //draw the words
-       //animation must be added
-       if (!done) {
-         for (int i=0;i<noWords;i++){	    	
-       	   g.drawString(words[i].getWord(),words[i].getX(),words[i].getY());	
-       	   //g.drawString(words[i].getWord(),words[i].getX(),words[i].getY());
-         }
-       }  
-	}
-		
-	WordPanel(WordRecord[] w, int maxY) {
-      this.words= new WordRecord[w.length];  
-      for (int i = 0; i < w.length; i++) {
-         this.words[i] = new WordRecord(w[i]);
+		int width = getWidth();
+		int height = getHeight();
+		g.clearRect(0, 0, width, height);
+		g.setColor(Color.red);
+		g.fillRect(0, maxY-10, width, height);
+
+		g.setColor(Color.black);
+		g.setFont(new Font("Helvetica", Font.PLAIN, 26));
+	    // Draw the words.
+	    // Animation must be added
+      if (!done) {
+   		for (int i=0; i < noWords; i++){
+   			g.drawString(words[i].getWord(), words[i].getX(), words[i].getY());	
+   		}
       }
-          
-		noWords = w.length;
-		done=false;
-		this.maxY=maxY;		
 	}
 	
-   public void reset() {for (WordRecord w : words) {w.resetWord();} WordApp.score.resetScore();} // Reset game from begginning}
+	WordPanel(WordRecord[] wds, int maxY) {
+		this.words = new WordRecord[wds.length];  
+		for (int i = 0; i < wds.length; i++) {
+			this.words[i] = new WordRecord(wds[i]);
+		}
+      
+		noWords = words.length;
+		done = false;
+		this.maxY = maxY;		
+	} // End of WordPanel Constructor
+   
+   public void reset() {for (WordRecord w : words) {w.resetWord();} WordApp.score.resetScore();} // Reset game from beginning
    
    public void start() {
       done = false;
@@ -56,7 +54,7 @@ public class WordPanel extends JPanel implements Runnable {
          animator = new Thread(this);
          animator.start();
       } 
-   }
+   } // End of start
    
    public void stop() {
       done = true;
@@ -65,52 +63,46 @@ public class WordPanel extends JPanel implements Runnable {
          animator = null;
       }
       repaint();
-   }
+   } // End of stop
    
+   public boolean endGame () {
+      if (WordApp.score.getTotal() >= WordApp.totalWords) {
+         return false;
+      }
+      else {
+         return true;
+      }
+   } // End of endGame
+	
 	public void run() {
-	   // add in code to animate this
-      while (true) { 
-        // Repainting the screen 
-        // calls the paint function
-        update();        
-        repaint();
-        
-        try {
-          // creating a pause of 1 second 
-          // so that the movement is recognizable 
-          Thread.sleep(1000); 
-        } 
-        catch (InterruptedException ie) { 
-          System.out.println(ie); 
-        } 
-      }  
-	}
-   
-   private void update() {
-      for (WordRecord word: words) {
-         if (word.getY() <= (maxY-15)) {
-            if (!word.matchWord(WordApp.textFromUser)){
-               word.drop(word.getSpeed()/100);
+		// Code to animate this.
+      // Game loop.
+      while(WordApp.done || endGame()) {
+         // Allocate threads.
+         UpdateThread[] updateThreads = new UpdateThread[noWords];
+		   for (int i = 0; i < noWords; i++) {
+            updateThreads[i] = new UpdateThread(words[i], maxY);
+            // Initiate threads.
+            updateThreads[i].start();
+            // Wait for threads.
+			   try {
+               updateThreads[i].join();
             }
-            else {
-               WordApp.score.caughtWord(WordApp.textFromUser.length());
-               WordApp.caught.setText("Caught: " + WordApp.score.getCaught() + "    ");
-               WordApp.scr.setText("Score:" + WordApp.score.getScore()+ "    ");
+            catch (InterruptedException e1) {
+               e1.printStackTrace();
             }
-         }
-         else {
-            word.resetWord();
-            WordApp.score.missedWord();
-            WordApp.missed.setText("Missed:" + WordApp.score.getMissed() + "    ");
-         }
+            // Repaint.
+	         repaint(); 
+		   }  
       }
       
-      if (WordApp.score.getTotal() == WordDictionary.size) {System.out.println("Game Over!"); 
-         System.out.println("Caught: " + WordApp.score.getCaught());
-	      System.out.println("Missed:" + WordApp.score.getMissed());
-	      System.out.println("Score:" + WordApp.score.getScore());
-         System.exit(0);
-      }
-   }
-}
+      System.out.println("Game Over!"); 
+      System.out.println("Caught: " + WordApp.score.getCaught());
+	   System.out.println("Missed:" + WordApp.score.getMissed());
+	   System.out.println("Score:" + WordApp.score.getScore());
+      System.exit(0);
+      
+	} // End of run
+} // End of WordPanel 
+
 

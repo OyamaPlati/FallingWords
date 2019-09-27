@@ -1,6 +1,6 @@
 public class WordRecord {
 	private String text;
-	private int x;
+	private  int x;
 	private int y;
 	private int maxY;
 	private boolean dropped;
@@ -10,6 +10,8 @@ public class WordRecord {
 	private static int minWait=100;
 
 	public static WordDictionary dict;
+	
+
 	
 	WordRecord() {
 		text="";
@@ -25,7 +27,7 @@ public class WordRecord {
 		this.text=text;
 	}
 	
-	WordRecord(String text, int x, int maxY) {
+	WordRecord(String text,int x, int maxY) {
 		this(text);
 		this.x=x;
 		this.maxY=maxY;
@@ -41,8 +43,8 @@ public class WordRecord {
 		fallingSpeed = original.fallingSpeed;
    }
 	
-   // all getters and setters must be synchronized
-	public synchronized void setY(int y) {
+// all getters and setters must be synchronized
+	public synchronized  void setY(int y) {
 		if (y>maxY) {
 			y=maxY;
 			dropped=true;
@@ -50,27 +52,27 @@ public class WordRecord {
 		this.y=y;
 	}
 	
-	public synchronized void setX(int x) {
+	public synchronized  void setX(int x) {
 		this.x=x;
 	}
 	
-	public synchronized void setWord(String text) {
+	public synchronized  void setWord(String text) {
 		this.text=text;
 	}
 
-	public synchronized String getWord() {
+	public synchronized  String getWord() {
 		return text;
 	}
 	
-	public synchronized int getX() {
+	public synchronized  int getX() {
 		return x;
 	}	
 	
-	public synchronized int getY() {
+	public synchronized  int getY() {
 		return y;
 	}
 	
-	public synchronized int getSpeed() {
+	public synchronized  int getSpeed() {
 		return fallingSpeed;
 	}
 
@@ -88,6 +90,7 @@ public class WordRecord {
 		dropped=false;
 		fallingSpeed=(int)(Math.random() * (maxWait-minWait)+minWait); 
 		//System.out.println(getWord() + " falling speed = " + getSpeed());
+
 	}
 	
 	public synchronized boolean matchWord(String typedText) {
@@ -100,11 +103,22 @@ public class WordRecord {
 			return false;
 	}
 	
-	public synchronized void drop(int inc) {
+
+	public synchronized  void drop(int inc) {
 		setY(y+inc);
 	}
 	
-	public synchronized boolean dropped() {
+	public synchronized  boolean dropped() {
 		return dropped;
 	}
+   
+   public String toString() {
+      return ("text = " + text + "\n" + 
+		        " x = " + x + "\n" +
+		        " y = " + y + "\n" +
+		        " maxY = " + maxY + "\n" +
+		        " dropped = " + dropped + "\n" +
+		        " fallingSpeed = " + fallingSpeed + "\n");
+   }
+
 }
