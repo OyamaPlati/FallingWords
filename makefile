@@ -1,5 +1,7 @@
 JFLAGS = -g
 JC = javac
+JVM = java
+MAIN = WordApp
 
 .SUFFIXES: .java .class
 .java.class:
@@ -10,6 +12,9 @@ CLASSES = \ WordDictionary.java \ WordRecord.java \ Score.java \ UpdateThread.ja
 default: classes
 
 classes: $(CLASSES:.java=.class)
+
+run: classes
+	$(JVM) $(MAIN) ${ARGS}
 
 clean:
 	$(RM) *.class
