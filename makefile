@@ -5,7 +5,7 @@ JC = javac
 .java.class:
 	$(JC) $(JFLAGS) $*.java
 
-CLASSES = \ WordDictionary.java \ WordRecord.java \ Score.java \ WordPanel.java \ WordApp.java
+CLASSES = \ WordDictionary.java \ WordRecord.java \ Score.java \ UpdateThread.java \ CaughtThread.java \ WordPanel.java \ WordApp.java
 
 default: classes
 
